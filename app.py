@@ -26,7 +26,7 @@ c = conn.cursor()
 
 try:
     c.execute('''
-        INSERT INTO Bajer (navn, rating) VALUES ('Carlsberg pilser', 6), ('Carlsberg nordic', 5)
+        INSERT INTO Bajer (navn, rating) VALUES ('Carlsberg pilser', 6), ('Carlsberg nordic', 5), ('Odense Classic', 10),('Odense Pilsner',7),('Heineken', 5),('Groen Tuborg', 6)
     ''')
 except:
     pass
@@ -39,7 +39,7 @@ rows = c.fetchall()
 
 print(rows)
 
-#c.execute('''DROP TABLE Bajer''')
+c.execute('''DROP TABLE Bajer''')
 
 print('It\'s Alive')
 
