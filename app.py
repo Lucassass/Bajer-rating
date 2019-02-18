@@ -1,46 +1,22 @@
-import sqlite3
+from flask import Flask, render_template, g
+from model import Model
+app = Flask(__name__)
 
-def create_connection():
-    conn = sqlite3.connect('db.db')
-    return conn
+app.env = 'development'
 
-def create_table(conn):
-    c = conn.cursor()
+model = Model()
 
-    c.execute('''
-    CREATE TABLE IF NOT EXISTS Bajer (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        navn TEXT NOT NULL UNIQUE,
-        rating INTEGER NOT NULL
-        )
-    ''')
+def get_db():
+    return model.db
 
-def close_connection(conn):
-    conn.commit()
-    conn.close()
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-conn = create_connection()
-create_table(conn)
+@app.route('/db')
+def db():
+    conn = get_db()
+    return render_template('data_test.html')
 
-c = conn.cursor()
-
-try:
-    c.execute('''
-        INSERT INTO Bajer (navn, rating) VALUES ('Carlsberg pilser', 6), ('Carlsberg nordic', 5), ('Odense Classic', 10),('Odense Pilsner',7),('Heineken', 5),('Groen Tuborg', 6)
-    ''')
-except:
-    pass
-
-c.execute('''
-SELECT * FROM Bajer
-''')
-
-rows = c.fetchall()
-
-print(rows)
-
-c.execute('''DROP TABLE Bajer''')
-
-print('It\'s Alive')
-
-close_connection(conn)
+if __name__ == "__main__":
+    app.run(debug=True)
