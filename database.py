@@ -5,17 +5,7 @@ def create_connection():
     print('Database connected')
     return conn
 
-def create_table(conn):
-    c = conn.cursor()
-
-    c.execute('''
-    CREATE TABLE IF NOT EXISTS Bajer (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        navn TEXT NOT NULL UNIQUE,
-        rating INTEGER NOT NULL
-        )
-    ''')
-
 def close_connection(conn):
     conn.commit()
     conn.close()
+    print("Database closed")

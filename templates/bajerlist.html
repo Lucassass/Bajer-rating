@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Producent</th>
+                        <th scope="col">Navn</th>
+                        <th scope="col">Rating</th>
+                        <th scope="col">Poster</th>
+                    </tr>
+                </thead>                
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td>{{ post['producer'] }}</td>
+                        <td>{{ post['name'] }}</td>
+                        <td>{{ post['rating'] }}/10</td>
+                        <td>{{ post['poster'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}
