@@ -1,46 +1,113 @@
 import sqlite3
+import gc
+from flask import Flask, render_template, request, url_for, redirect, session
+from wtforms import Form, TextField, PasswordField, validators
+from passlib.hash import sha256_crypt
+from model import create_connection, close_connection, insert_user, retrieve_users
 
-def create_connection():
-    conn = sqlite3.connect('db.db')
-    return conn
+app = Flask(__name__)
 
-def create_table(conn):
-    c = conn.cursor()
 
-    c.execute('''
-    CREATE TABLE IF NOT EXISTS Bajer (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        navn TEXT NOT NULL UNIQUE,
-        rating INTEGER NOT NULL
-        )
-    ''')
+app.env = 'development'
+app.config['SECRET_KEY'] = 'asd'
+app.config['SESSION_TYPE'] = 'memcache'
 
-def close_connection(conn):
-    conn.commit()
-    conn.close()
 
-conn = create_connection()
-create_table(conn)
+app.debug = True
 
-c = conn.cursor()
 
-try:
-    c.execute('''
-        INSERT INTO Bajer (navn, rating) VALUES ('Carlsberg pilser', 6), ('Carlsberg nordic', 5), ('Odense Classic', 10),('Odense Pilsner',7),('Heineken', 5),('Groen Tuborg', 6)
-    ''')
-except:
-    pass
+class RegistrationForm(Form):
+    username = TextField('username', [
+        validators.Length(min=4, max=20),
+        validators.Required()
+    ])
+    email = TextField('Email Address', [validators.Length(min=6, max=50)])
+    password = PasswordField('New Password', [
+        validators.Required(),
+        validators.EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat Password')
 
-c.execute('''
-SELECT * FROM Bajer
-''')
+class LoginForm(Form):
+    username = TextField('username', [
+        validators.Length(min=4, max=20),
+        validators.Required()
+    ])
+    password = PasswordField('New Password', [validators.Required()])
 
-rows = c.fetchall()
+@app.route('/')
+@app.route('/home')
+@app.route('/index')
+def index():
+    return render_template('index.html')
 
-print(rows)
+@app.route('/beerlist')
+def beerlist():
+    conn, c = create_connection()
+    conn.row_factory = sqlite3.Row
 
-c.execute('''DROP TABLE Bajer''')
+    c.execute('SELECT * FROM bajer')
 
-print('It\'s Alive')
+    rows = c.fetchall()
 
-close_connection(conn)
+    close_connection(conn)
+    return render_template('bajerlist.html', posts=rows)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register_page():
+    form = RegistrationForm(request.form)
+
+    if request.method == 'POST':
+        print(form.username.data, form.email.data, form.password.data)
+        username = form.username.data
+        email = form.email.data
+        password = sha256_crypt.encrypt(str(form.password.data))
+        conn, c = create_connection()
+
+        c.execute('SELECT count(*) FROM users WHERE username = (?)', (username,))
+        x = c.fetchone()
+
+        if x[0] > 0:
+            print("User already found")
+            return render_template('register.html', form=form)
+        else:
+            c.execute('INSERT INTO users (username, password, email) VALUES (?,?,?)', 
+                      (username, password, email))
+
+            conn.commit()
+            print("Added user")
+            c.close()
+            conn.close()
+            gc.collect()
+
+            session['logged_in'] = True
+            session['username'] = username
+
+            return redirect(url_for('index'))
+    else:
+        return render_template('register.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    conn, c = create_connection()
+    error = ''
+    if request.method == 'POST':
+        c.execute('SELECT * FROM users WHERE username = (?)', (request.form['username'],))
+        data =c.fetchone()
+
+        if sha256_crypt.verify(request.form['password'], data):
+            session['logged_in'] = True
+            session['username'] = request.form['username']
+
+            print('Logged in')
+            return redirect(url_for('index'))
+        else:
+            error = 'Invalid credentials, try again'
+            print('Invalid credentials')
+
+        gc.collect()
+
+        return render_template('login.hmtl', error=error)
+
+if __name__ == "__main__":
+    app.run()
