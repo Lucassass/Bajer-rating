@@ -93,7 +93,7 @@ def login():
     error = ''
     if request.method == 'POST':
         c.execute('SELECT * FROM users WHERE username = (?)', (request.form['username'],))
-        data =c.fetchone()
+        data = c.fetchone()
 
         if sha256_crypt.verify(request.form['password'], data):
             session['logged_in'] = True
