@@ -1,5 +1,5 @@
 import gc
-from flask import Flask, render_template, request, url_for, redirect, session
+from flask import Flask, render_template, request, url_for, redirect, session, jsonify
 from wtforms import Form, TextField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from model import create_connection, close_connection, create_tables, insert_user, retrieve_user
@@ -39,12 +39,12 @@ class LoginForm(Form):
 @app.route('/home')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', user=session.get('username', None))
 
 @app.route('/beerlist')
 def beerlist():
-    rows = get_beer()
-    return render_template('bajerlist.html', posts=rows)
+    rows = jsonify(get_beer())
+    return render_template('bajerlist.html', posts=rows, user=session.get('username', None))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
@@ -64,7 +64,8 @@ def register_page():
 
         if x[0] > 0:
             print("User already found")
-            return render_template('register.html', form=form)
+            return render_template('register.html', form=form,
+                                   user=session.get('username', None))
         else:
             insert_user(username, password, name, email)
             print("Added user")
@@ -75,28 +76,35 @@ def register_page():
 
             return redirect(url_for('index'))
 
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, user=session.get('username', None))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     error = ''
-    if request.method == 'POST':# and form.validate():
+    if request.method == 'POST':
         data = retrieve_user(request.form['username'])
-        if sha256_crypt.verify(request.form['password'], data[2]):
+        if data is not None:
+            if sha256_crypt.verify(request.form['password'], data[2]):
 
-            session['logged_in'] = True
-            session['username'] = request.form['username']
+                session['logged_in'] = True
+                session['username'] = request.form['username']
 
-            print('Logged in')
-            return redirect(url_for('index'))
-        else:
-            error = 'Invalid credentials, try again'
-            print('Invalid credentials')
+                print('Logged in')
+                return redirect(url_for('index'))
+            else:
+                error = 'Invalid credentials, try again'
+                print('Invalid credentials')
 
         gc.collect()
-        return render_template('login.hmtl', error=error)
-    return render_template('login.html', form=form)
+        return render_template('login.html', error=error, form=form,
+                               user=session.get('username', None))
+    return render_template('login.html', form=form, user=session.get('username', None))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run()
