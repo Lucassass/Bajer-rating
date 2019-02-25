@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="/beerlist" class = "form-inline" method = "POST">
+	<input type ="text" class = "form-control" placeholder = "Producer" name = "producer" value = "">
+	<input type = "text" class = "form-control" placeholder = "Name" name = "name" value = "">
+	<input type = "text" class ="form-control" placeholder = "Rating" name = "rating" value = ""> 
+	<input type = "submit" class = "btn btn-primary" value = "Tilføj">
+</form>
+{% endblock content %}
