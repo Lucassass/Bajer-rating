@@ -84,6 +84,7 @@ def login():
     if request.method == 'POST':# and form.validate():
         data = retrieve_user(request.form['username'])
         if sha256_crypt.verify(request.form['password'], data[2]):
+
             session['logged_in'] = True
             session['username'] = request.form['username']
 
