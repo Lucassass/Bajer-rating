@@ -1,12 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
-<form method=post>
-    <dl>
-      {{ render_field(form.username) }}
-      {{ render_field(form.password) }}
-    </dl>
-    <input type="submit" class="btn btn-primary" value='Login'>
-</form>
-
-
+<div class="container">
+    {% from "_formhelpers.html" import render_field %}
+    <form method=post>
+        <dl>
+          {{ render_field(form.username) }}
+          {{ render_field(form.password) }}
+        </dl>
+        <input type="submit" class="btn btn-primary" value='Login'>
+    </form>
+    {% if error %}
+        <p class="error">{{error}}</p>
+    {% endif %}
+</div>
 {% endblock content %}
