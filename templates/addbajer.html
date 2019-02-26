@@ -1,33 +1,36 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container-fluid">
-	<form action="/beerlist" class = "form" method = "POST">
-		<div class="form-group">
-			<label for="producer">Producenten af øllen:</label>
-			<input type="text" class="form-control" placeholder="Producent" name="producer" value="">
-			<small id="producerHelp" class="form-text text-muted">Producenten er mærket på øllen, som eks. Albani.</small>
+	<div class="row">
+		<div class="col-md-4">
+			<form action="/beerlist" class = "form" method = "POST">
+				<div class="form-group">
+					<label for="producer">Producenten af øllen:</label>
+					<input type="text" class="form-control" placeholder="Producent" name="producer" value="">
+					<small id="producerHelp" class="form-text text-muted">Producenten er mærket på øllen, som eks. Albani.</small>
+				</div>
+				<div class="form-group">
+					<label for="name">Navnet på selve øllen:</label>
+					<input type = "text" class = "form-control" placeholder = "Navn" name = "name" value = "">
+				</div>
+				<div class="form-group">
+					<label for="rating">Bedømmelse af øllen ud fra en skala på 10:</label>
+					<select class="form-control" name="rating" id="rating">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+					</select>
+				</div>
+					<input type = "submit" class = "btn btn-primary" value = "Tilføj">
+			</form>
 		</div>
-		<div class="form-group">
-			<label for="name">Navnet på selve øllen:</label>
-			<input type = "text" class = "form-control" placeholder = "Navn" name = "name" value = "">
-		</div>
-		<div class="form-group">
-			<label for="rating">Bedømmelse af øllen ud fra en skala på 10:</label>
-			<select class="form-control" name="rating" id="rating">
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
-				<option value="6">6</option>
-				<option value="7">7</option>
-				<option value="8">8</option>
-				<option value="9">9</option>
-				<option value="10">10</option>
-			</select>
-		</div>
-			<input type = "submit" class = "btn btn-primary" value = "Tilføj">
-		
-	</form>
+	</div>
 </div>
 {% endblock content %}

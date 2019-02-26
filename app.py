@@ -36,8 +36,8 @@ class LoginForm(Form):
     password = PasswordField('Password', [validators.DataRequired()])
 
 class BeerForm(Form):
-    producer = TextField('producer',[validators.DataRequired()])
-    name = TextField('name',[validators.DataRequired()])
+    producer = TextField('producer', [validators.DataRequired()])
+    name = TextField('name', [validators.DataRequired()])
     rating = SelectField('rating', choices=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',])
 
 
@@ -47,11 +47,9 @@ class BeerForm(Form):
 def index():
     return render_template('index.html', user=session.get('username', None))
 
-@app.route('/beerlist',methods=['GET','POST'])
+@app.route('/beerlist', methods=['GET', 'POST'])
 def beerlist():
-    form = BeerForm()
-
-    if request.method == 'POST': 
+    if request.method == 'POST':
         producer = request.form['producer']
         name = request.form['name']
         rating = request.form['rating']
@@ -72,7 +70,7 @@ def about():
 
 @app.route('/addbajer')
 def tilføj_bajer():
-     return render_template('addbajer.html')
+    return render_template('addbajer.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
