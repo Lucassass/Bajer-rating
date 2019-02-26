@@ -46,6 +46,10 @@ def beerlist():
     rows = get_beer()
     return render_template('bajerlist.html', posts=rows, user=session.get('username', None))
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
     form = RegistrationForm(request.form)

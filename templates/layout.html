@@ -3,17 +3,20 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
     <title>Øldomondo</title>
     <link rel="icon" href="http://icons.iconarchive.com/icons/paomedia/small-n-flat/256/beer-icon.png">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <header>
-  <nav class="navbar navbar-expand-lg navbar-fixed-top navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-sm navbar-fixed-top navbar-dark bg-dark">
     <div class="container-fluid">
       
       <div class="navbar-header">
-          <a class="navbar-brand" href="/">Øldomondo</a>
+          <a class="navbar-brand" href="/"><span class="fas fa-beer" style="color:#ffff"></span> Øldomondo</a>
       </div>
         
 
@@ -26,12 +29,15 @@
             <li class="nav nav-item active">
               <a href="/beerlist" class="nav-link">Bajer liste</a>
             </li>
+            <li class="nav nav-item">
+              <a href="/about" class="nav-link">About</a>
+            </li>
           </ul>
 
           {% if not user %}
           <ul class="nav navbar-nav ml-auto">
             <li class="nav-item">
-                <a role="presentation" class="nav-link" data-toggle="modal" data-target="#login" href="#">Login</a>
+                <a role="presentation" class="nav-link" data-toggle="modal" data-target="#login" href="#"><span class="fas fa-sign-in-alt" style="color: #9A9D97"></span> Login</a>
                 <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
@@ -59,7 +65,7 @@
                   </div>
             </li>
             <li class="nav-item">
-                <a role="presentation" class="nav-link" data-toggle="modal" data-target="#register" href="#"><span class="glyphicon glyphicon-pencil"></span> Sign up</a>
+                <a role="presentation" class="nav-link" data-toggle="modal" data-target="#register" href="#"><span class="fas fa-pencil-alt" style="color: #9A9D97"></span> Sign up</a>
                     <div class="modal fade" id="register" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                       <div class="modal-dialog">
                         <div class="modal-content">
@@ -87,9 +93,9 @@
           {% else %}
             <ul class="nav navbar-nav ml-auto">
               <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user }}<span class="caret"></span></a>
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="fas fa-user" style="color:#9A9D97"></span> {{ user }}<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="/logout" class="nav-link" style="color: #343A40">Logout</a></li>
+                  <li><a href="/logout" class="nav-link" style="color: #343A40"><span class="fas fa-sign-out-alt" style="color: #343A40"></span> Logout</a></li>
                 </ul>
               </li>
             </ul>
