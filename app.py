@@ -1,5 +1,5 @@
 import gc
-from flask import Flask, render_template, request, url_for, redirect, session, jsonify
+from flask import Flask, render_template, request, url_for, redirect, session
 from wtforms import Form, TextField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from model import create_connection, close_connection, create_tables, insert_user, retrieve_user
@@ -43,7 +43,7 @@ def index():
 
 @app.route('/beerlist')
 def beerlist():
-    rows = jsonify(get_beer())
+    rows = get_beer()
     return render_template('bajerlist.html', posts=rows, user=session.get('username', None))
 
 @app.route('/register', methods=['GET', 'POST'])
