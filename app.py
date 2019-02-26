@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, url_for, redirect, session
 from wtforms import Form, TextField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from model import create_connection, close_connection, create_tables, insert_user, retrieve_user
-from model import get_beer
+from model import get_beer, add_beer
 
 app = Flask(__name__)
 
@@ -35,20 +35,47 @@ class LoginForm(Form):
     ])
     password = PasswordField('Password', [validators.DataRequired()])
 
+class BeerForm(Form):
+    producer = TextField('producer',[validators.DataRequired()])
+    name = TextField('name',[validators.DataRequired()])
+    rating = TextField('rating', [validators.DataRequired()])
+
+
 @app.route('/')
 @app.route('/home')
 @app.route('/index')
 def index():
     return render_template('index.html', user=session.get('username', None))
 
-@app.route('/beerlist')
+@app.route('/beerlist',methods=['GET','POST'])
 def beerlist():
+    
+    form = BeerForm()
+
+    if request.method == 'POST': 
+        producer = request.form['producer']
+        name = request.form['name']
+        rating = request.form['rating']
+        poster = session.get('username')
+        print(producer,name,rating)
+    
+        if poster != None:
+                add_beer(producer, name, rating, poster)
+        else:
+            return redirect(url_for('login'))
+
+
     rows = get_beer()
     return render_template('bajerlist.html', posts=rows, user=session.get('username', None))
 
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/addbajer')
+def tilføj_bajer():
+     return render_template('addbajer.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
