@@ -1,6 +1,6 @@
 import gc
 from flask import Flask, render_template, request, url_for, redirect, session
-from wtforms import Form, TextField, PasswordField, validators
+from wtforms import Form, TextField, PasswordField, SelectField, validators
 from passlib.hash import sha256_crypt
 from model import create_connection, close_connection, create_tables, insert_user, retrieve_user
 from model import get_beer, add_beer
@@ -38,7 +38,7 @@ class LoginForm(Form):
 class BeerForm(Form):
     producer = TextField('producer',[validators.DataRequired()])
     name = TextField('name',[validators.DataRequired()])
-    rating = TextField('rating', [validators.DataRequired()])
+    rating = SelectField('rating', choices=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',])
 
 
 @app.route('/')
@@ -49,21 +49,18 @@ def index():
 
 @app.route('/beerlist',methods=['GET','POST'])
 def beerlist():
-    
     form = BeerForm()
 
     if request.method == 'POST': 
         producer = request.form['producer']
         name = request.form['name']
         rating = request.form['rating']
-        poster = session.get('username')
-        print(producer,name,rating)
-    
-        if poster != None:
-                add_beer(producer, name, rating, poster)
+        if session.get('username', None) is not None:
+            poster = retrieve_user(session.get('username'))
+            poster = poster[3]
+            add_beer(producer, name, rating, poster)
         else:
             return redirect(url_for('login'))
-
 
     rows = get_beer()
     return render_template('bajerlist.html', posts=rows, user=session.get('username', None))
