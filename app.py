@@ -1,6 +1,6 @@
 import gc
 from flask import Flask, render_template, request, url_for, redirect, session
-from wtforms import Form, TextField, PasswordField, validators
+from wtforms import Form, TextField, PasswordField, SelectField, validators
 from passlib.hash import sha256_crypt
 from model import create_connection, close_connection, create_tables, insert_user, retrieve_user
 from model import get_beer, add_beer
@@ -36,42 +36,41 @@ class LoginForm(Form):
     password = PasswordField('Password', [validators.DataRequired()])
 
 class BeerForm(Form):
-    producer = TextField('producer',[validators.DataRequired()])
-    name = TextField('name',[validators.DataRequired()])
-    rating = TextField('rating', [validators.DataRequired()])
+    producer = TextField('producer', [validators.DataRequired()])
+    name = TextField('name', [validators.DataRequired()])
+    rating = SelectField('rating', choices=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',])
 
 
 @app.route('/')
 @app.route('/home')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', user=session.get('username', None))
 
-@app.route('/beerlist',methods=['GET','POST'])
+@app.route('/beerlist', methods=['GET', 'POST'])
 def beerlist():
-    
-    form = BeerForm()
-
-    if request.method == 'POST': 
+    if request.method == 'POST':
         producer = request.form['producer']
         name = request.form['name']
         rating = request.form['rating']
-        poster = session.get('username')
-        print(producer,name,rating)
-    
-        if poster != None:
-                add_beer(producer, name, rating, poster)
+        if session.get('username', None) is not None:
+            poster = retrieve_user(session.get('username'))
+            poster = poster[3]
+            add_beer(producer, name, rating, poster)
         else:
             return redirect(url_for('login'))
 
-
     rows = get_beer()
-    return render_template('bajerlist.html', posts=rows)
+    return render_template('bajerlist.html', posts=rows, user=session.get('username', None))
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 @app.route('/addbajer')
 def tilføj_bajer():
-     return render_template('addbajer.html')
+    return render_template('addbajer.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
@@ -91,7 +90,8 @@ def register_page():
 
         if x[0] > 0:
             print("User already found")
-            return render_template('register.html', form=form)
+            return render_template('register.html', form=form,
+                                   user=session.get('username', None))
         else:
             insert_user(username, password, name, email)
             print("Added user")
@@ -102,28 +102,35 @@ def register_page():
 
             return redirect(url_for('index'))
 
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, user=session.get('username', None))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     error = ''
-    if request.method == 'POST':# and form.validate():
+    if request.method == 'POST':
         data = retrieve_user(request.form['username'])
-        if sha256_crypt.verify(request.form['password'], data[2]):
+        if data is not None:
+            if sha256_crypt.verify(request.form['password'], data[2]):
 
-            session['logged_in'] = True
-            session['username'] = request.form['username']
+                session['logged_in'] = True
+                session['username'] = request.form['username']
 
-            print('Logged in')
-            return redirect(url_for('index'))
-        else:
-            error = 'Invalid credentials, try again'
-            print('Invalid credentials')
+                print('Logged in')
+                return redirect(url_for('index'))
+            else:
+                error = 'Invalid credentials, try again'
+                print('Invalid credentials')
 
         gc.collect()
-        return render_template('login.hmtl', error=error)
-    return render_template('login.html', form=form)
+        return render_template('login.html', error=error, form=form,
+                               user=session.get('username', None))
+    return render_template('login.html', form=form, user=session.get('username', None))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run()

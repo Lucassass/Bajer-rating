@@ -2,26 +2,32 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Producent</th>
-                        <th scope="col">Navn</th>
-                        <th scope="col">Rating</th>
-                        <th scope="col">Poster</th>
-                    </tr>
-                </thead>                
-                <tbody>
-                    {% for post in posts %}
-                    <tr>
-                        <td>{{ post[1] }}</td>
-                        <td>{{ post[2] }}</td>
-                        <td>{{ post[3] }}/10</td>
-                        <td>{{ post[4] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="col-md-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Producent</th>
+                            <th scope="col">Navn</th>
+                            <th scope="col">Rating</th>
+                            <th scope="col">Poster</th>
+                        </tr>
+                    </thead>                
+                    <tbody>
+                        {% for post in posts %}
+                        <tr>
+                            <td>{{ post[1] }}</td>
+                            <td>{{ post[2] }}</td>
+                            <td>{{ post[3] }}/10</td>
+                            <td>{{ post[4] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <p>Mangler der en øl? Eller er det bare ikke rigtige bedømmelser? Så kan du tilføje en her:</p>
+                <a href="/addbajer"><button type="button" class="btn btn-primary">Tilføj bajer</button></a>
+            </div>
         </div>
     </div>
 {% endblock content %}
